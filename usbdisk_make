@@ -1,0 +1,92 @@
+#!/bin/sh
+
+#
+# Copyright (c) 2016 Aaron Poffenberger <akp@hypernote.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+
+#
+# Copies the image file passed as the first argument to the disk
+# of the user's choosing.
+#
+# Finds all disks in the system by checking sysctl hw.disknames
+# excludes sd0 and any softraid0 devices from the pick-list.
+#
+# WARNING: This script can cause irreperable damage to disk data!
+#          Make sure you understand what it does before using.
+#
+
+IMAGE="$1"
+ERROR=1
+
+# find disks
+# sysctl hw.sensors.softraid0 == (sd0,sd1,sdn)
+# convert to sd0|sd1|sdn
+SOFTRAID=$(sysctl hw.sensors.softraid0 \
+		   | cut -d '(' -f 2 \
+		   | cut -d ')' -f 1 \
+		   | tr ',' '|')
+DONOTUSE="sd0|$SOFTRAID"
+echo "Excluded disks: $DONOTUSE"
+DISKS=$(sysctl hw.disknames \
+		| cut -d '=' -f 2 \
+		| tr ',' '\n' \
+		| cut -d ':' -f 1 \
+		| egrep -v "$DONOTUSE" \
+		| tr '\n' ', ')
+
+echo -n "Select USB disk to dd to: [${DISKS}Exit] "
+read DISK
+if [ -z $DISK ] ; then
+	exit
+elif [ $(echo "$DISK" | egrep "${DONOTUSE}") ] ; then
+	echo "$DISK is not a valid choice!"
+	exit $ERROR
+elif [ "${DISK%xit}" = "E" -o "${DISK%xit}" = "e" ] ; then
+	exit
+fi
+
+MOUNTED=$(mount \
+		  | sort \
+		  | cut -d ' ' -f 1 \
+		  | sed -e 's#\(.*\)\(dev\)/\([^0-9]*\)\([0-9]*\)\(.*\)#\3\4#' \
+		  | uniq \
+		  | egrep "$DISK")
+if [ $MOUNTED ] ; then
+	echo "Disk is mounted. umount(8) all the partitions from $DISK."
+	echo
+	mount | grep "$DISK"
+	exit $ERROR
+fi
+
+# show the user the disklabel before imaging
+doas disklabel "$DISK"
+if [ $? ] ; then
+	echo "doas dd if='$IMAGE' of='/dev/${DISK}c' bs=1m"
+	echo -n "Continue copying $IMAGE to drive $DISK? [yN] "
+	read REPLY
+	if [ "${REPLY:-N}" = "Y" -o "${REPLY:-N}" = "y" ]
+	then
+		# do dangerous stuff
+		doas dd if="$IMAGE" of="/dev/${DISK}c" bs=1m
+		# show the user the disklabel after imaging
+		doas disklabel "$DISK"
+	else
+		echo "USB disk-create cancelled."
+		exit
+	fi
+else
+	echo "Invalid choice. USB disk-create cancelled."
+	exit $ERROR
+fi
