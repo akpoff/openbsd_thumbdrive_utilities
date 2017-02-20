@@ -33,7 +33,12 @@ Tools to fetch and install OpenBSD images to a thumbdrive.
 * REL_IMAGE - default: $(REL_DIR)/install$(REL).fs
 
 ## NOTE:
-SERVER has no default, set in file or ENV
+SERVER has no default, with SERVER=value or create Makefile.inc
+
+# Makefile.inc
+Use to set install-specific overrides.
+
+Excluded in .gitignore
 
 # Examples:
 ## Download snapshot for current machine architecture

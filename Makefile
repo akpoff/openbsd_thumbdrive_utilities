@@ -41,8 +41,10 @@
 #    CUR_IMAGE - default: highest numbered installnn.fs in $(CUR_DIR)
 #    REL_IMAGE - default: $(REL_DIR)/install$(REL).fs
 #
-# NOTE: SERVER has no default, set in file or ENV
+# NOTE:
+#    SERVER has no default, with SERVER=value or create Makefile.inc
 #
+#    Excluded in .gitignore
 #
 # Examples:
 #    Download snapshot for current machine architecture
@@ -68,7 +70,7 @@
 #    Perhaps write cdnn.iso to CD drive
 #
 
-SERVER?=
+.include "Makefile.inc"
 
 REL?!=rsync -v $(SERVER):: 2>/dev/null| grep 'release (' | tail -n 1 | cut -d ' ' -f 1
 
