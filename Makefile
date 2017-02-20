@@ -31,7 +31,7 @@
 #
 #
 # Variables:
-#    Override with `make VAR=VALUE`
+#    Override in Makefile.inc or with `make VAR=VALUE`.
 #
 #    SERVER - Server to check via rsync
 #    REL - Which release to track (from rsync $(SERVER)::)

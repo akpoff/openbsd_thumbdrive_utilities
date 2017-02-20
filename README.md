@@ -23,7 +23,7 @@ Tools to fetch and install OpenBSD images to a thumbdrive.
 * disk-rel - Make disk using the current release for the selected ARCH
 
 # Variables:
-  Override with `make VAR=VALUE`
+  Override in Makefile.inc or with `make VAR=VALUE`.
   
 * SERVER - Server to check via rsync
 * REL - Which release to track (from rsync $(SERVER)::)
