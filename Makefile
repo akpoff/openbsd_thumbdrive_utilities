@@ -44,7 +44,7 @@
 #    EXCLUDES - default: *
 #
 # NOTE:
-#    SERVER has no default, with SERVER=value or create Makefile.inc
+#    SERVER has no default. Set with SERVER=value or create Makefile.inc.
 #
 #    Excluded in .gitignore
 #

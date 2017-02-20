@@ -36,7 +36,7 @@ Tools to fetch and install OpenBSD images to a thumbdrive.
 * EXCLUDES - default: *
 
 ## NOTE:
-SERVER has no default, with SERVER=value or create Makefile.inc
+SERVER has no default. Set with SERVER=value or create Makefile.inc.
 
 # Makefile.inc
 Use to set install-specific overrides.
