@@ -10,6 +10,7 @@ Tools to fetch and install OpenBSD images to a thumbdrive.
 
 ## FILES:
 * Makefile
+* Makefile.inc.sample
 * usb_make
 * README.md
 
