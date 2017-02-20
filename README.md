@@ -32,6 +32,8 @@ Tools to fetch and install OpenBSD images to a thumbdrive.
 * REL_DIR - default: $(ARCH)/($REL)/
 * CUR_IMAGE - default: highest numbered installnn.fs in $(CUR_DIR)
 * REL_IMAGE - default: $(REL_DIR)/install$(REL).fs
+* INCLUDES - files to download
+* EXCLUDES - default: *
 
 ## NOTE:
 SERVER has no default, with SERVER=value or create Makefile.inc

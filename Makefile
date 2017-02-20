@@ -40,6 +40,8 @@
 #    REL_DIR - default: $(ARCH)/($REL)/
 #    CUR_IMAGE - default: highest numbered installnn.fs in $(CUR_DIR)
 #    REL_IMAGE - default: $(REL_DIR)/install$(REL).fs
+#    INCLUDES - files to download
+#    EXCLUDES - default: *
 #
 # NOTE:
 #    SERVER has no default, with SERVER=value or create Makefile.inc
@@ -88,7 +90,9 @@ REL_IMAGE?!=find $(REL_DIR) -name 'install*.fs' -print | sort -r | head -n 1
 CURPATH?=$(SERVER)::snapshots/$(ARCH)/
 RELPATH?=$(SERVER)::$(REL)/$(ARCH)/
 
-FLAGS:=--include=INSTALL.$(ARCH) --include=SHA256 --include=index.txt --include=install*.fs --exclude=* --progress
+INCLUDES?=--include=INSTALL.$(ARCH) --include=SHA256 --include=index.txt --include=install*.fs
+EXCLUDES?=--exclude=*
+FLAGS:= $(INCLUDES) $(EXCLUDES) --progress
 
 
 check: $(CUR_DIR)
